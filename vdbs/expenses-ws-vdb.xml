@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <vdb name="expenses" version="1">
-    <model name="rest-ws">
+    <model name="restws">
         <source name="webservice" translator-name="rest" connection-jndi-name="java:/expenses-DS"/>
     </model>
 
@@ -11,7 +11,7 @@
             descrizione_ente varchar(50),
 	          descrizione_codice varchar(90)
         ) AS SELECT  codice_siope, descrizione_ente, descrizione_codice
-           FROM (EXEC rest-ws.invokeHttp(action=>'GET', endpoint=>'/blog/convert/spese.json', stream=>'TRUE')) AS f,
+           FROM (EXEC restws.invokeHttp(action=>'GET', endpoint=>'/blog/convert/spese.json', stream=>'TRUE')) AS f,
 	            XMLTABLE('/root/data' PASSING JSONTOXML('root', f.result) COLUMNS
 		             descrizione_codice string PATH 'descrizione_codice/text()',
 		             codice_siope string PATH 'codice_siope/text()',
