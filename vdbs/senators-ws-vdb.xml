@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<vdb name="senators" version="1">
+    <model name="rs">
+        <source name="webservice" translator-name="rest" connection-jndi-name="java:/senators-DS"/>
+    </model>
+
+    <model name="list" type="VIRTUAL">
+        <metadata type="DDL"><![CDATA[
+           CREATE  VIEW info (
+            name string PRIMARY KEY,
+            party varchar(50),
+            birthday varchar(50),
+            gender varchar(50),
+            description varchar(50),
+	          twitterid varchar(12)
+        ) AS SELECT  name, party, birthday, gender, description, twitterid
+           FROM (EXEC restws.invokeHttp(action=>'GET', endpoint=>'/api/v2/role?current=true&role_type=senator', stream=>'TRUE')) AS f,
+	            XMLTABLE('/root/objects' PASSING JSONTOXML('root', f.result) COLUMNS
+              name string PATH 'person/name/text()',
+              party string PATH 'party/text()',
+              birthday string PATH 'person/birthday/text()',
+              gender string PATH 'person/gender/text()',
+              description string PATH 'description/text()',
+		          twitterid string PATH 'person/twitterid/text()') AS A;
+           ]]>
+        </metadata>
+    </model>
+
+    <translator name="rest" type="ws">
+        <property name="DefaultBinding" value="HTTP"/>
+    </translator>
+</vdb>
