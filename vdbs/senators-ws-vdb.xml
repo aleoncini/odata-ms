@@ -14,7 +14,7 @@
             description varchar(50),
 	          twitterid varchar(12)
         ) AS SELECT  name, party, birthday, gender, description, twitterid
-           FROM (EXEC restws.invokeHttp(action=>'GET', endpoint=>'/api/v2/role?current=true&role_type=senator', stream=>'TRUE')) AS f,
+           FROM (EXEC rs.invokeHttp(action=>'GET', endpoint=>'/api/v2/role?current=true&role_type=senator', stream=>'TRUE')) AS f,
 	            XMLTABLE('/root/objects' PASSING JSONTOXML('root', f.result) COLUMNS
               name string PATH 'person/name/text()',
               party string PATH 'party/text()',
